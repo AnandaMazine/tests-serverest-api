@@ -21,13 +21,14 @@ def test_create_user_with_duplicate_email():
         f"{BASE_URL}/usuarios",
         json=payload
     )
+    #print(response.json())
     assert response.status_code == 201
 
     segunda_tentativa = requests.post( #cadastrando novamente com o mesmo email
         f"{BASE_URL}/usuarios",
         json=payload
     )
-    # print(segunda_tentativa.json()) # printa a saída pra verificar se está correto
+    #print(segunda_tentativa.json()) # printa a saída pra verificar se está correto
     assert segunda_tentativa.status_code == 400
 
 # 3- TESTE CADASTRA USUÁRIO SEM EMAIL
