@@ -30,7 +30,6 @@ def test_create_user_with_duplicate_email():
     # print(segunda_tentativa.json()) # printa a saída pra verificar se está correto
     assert segunda_tentativa.status_code == 400
 
-
 # 3- TESTE CADASTRA USUÁRIO SEM EMAIL
 def test_create_user_without_email():
     payload = generate_user()
@@ -67,14 +66,14 @@ def test_create_user_without_password():
 # 6- TESTE BUSCA USUÁRIO POR ID VÁLIDO
 def test_get_user_by_valid_id():
     payload = generate_user()
-    response = requests.post(
+    response = requests.post( # primeiro cadastra um novo usuário
         f"{BASE_URL}/usuarios/",
         json=payload
     )
     assert response.status_code == 201
 
-    user_id = response.json()["_id"]
-    usuario_cadastrado = requests.get(
+    user_id = response.json()["_id"] 
+    usuario_cadastrado = requests.get(  # busca o usuário cadastrado
         f"{BASE_URL}/usuarios/{user_id}",
     )
     assert usuario_cadastrado.status_code == 200
@@ -83,7 +82,7 @@ def test_get_user_by_valid_id():
 def test_get_user_by_invalid_id():
     invalid_id = "123456789" # Usa um ID inexistente
     response = requests.get(
-        f"{BASE_URL}/usuarios/{invalid_id}",
+        f"{BASE_URL}/usuarios/{invalid_id}", # vai procurar o id inexistente
     )
     #print(response.status_code)
     #print(response.json())
@@ -91,7 +90,7 @@ def test_get_user_by_invalid_id():
 
 # 8- TESTE LISTA TODOS OS USUÁRIOS
 def test_list_all_users():
-    response = requests.get(
+    response = requests.get( # Função para buscar os usuários
         f"{BASE_URL}/usuarios/",
     )
     #print(response.json())
@@ -100,42 +99,46 @@ def test_list_all_users():
 # 9- TESTE ATUALIZA USUÁRIOS
 def test_update_user_successfully():
     payload = generate_user()
-    create_response = requests.post(
+    create_response = requests.post( # Cria novo usuário
         f"{BASE_URL}/usuarios",
         json=payload
     )
     assert create_response.status_code == 201
-    user_id = create_response.json()["_id"]
+    user_id = create_response.json()["_id"] # captura o id do usuário
 
-    updated_user = {
+    updated_user = { # cria novos dados do usuário
         "nome": "Usuário Atualizado",
         "email": f"novo_{uuid.uuid4().hex}@teste.com",
         "password": "123456",
         "administrador": "true"
     }
-    update_response = requests.put(
+    update_response = requests.put( # faz a requisão put
         f"{BASE_URL}/usuarios/{user_id}",
         json=updated_user
     )
     #print(update_response.json())
     assert update_response.status_code == 200
+    usuario_atualizado = requests.get( # busca o usuário atualizado
+    f"{BASE_URL}/usuarios/{user_id}"
+    )
+    usuario_atualizado.status_code == 200
 
 # 10- TESTE DELETA USUÁRIOS    
 def test_delete_user_successfully():
-    payload = generate_user()
-    create_response = requests.post(
+    payload = generate_user() # Cria o usuário
+    create_response = requests.post( # cadastra
         f"{BASE_URL}/usuarios",
         json=payload
     )
     assert create_response.status_code == 201
-    user_id = create_response.json()["_id"]
+    user_id = create_response.json()["_id"] # pega a id
     
-    delete_response = requests.delete(
+    delete_response = requests.delete( # exclui o usuário
         f"{BASE_URL}/usuarios/{user_id}",
     )
-    assert delete_response.status_code == 200
+    assert delete_response.status_code == 200 # valida a exclusão
 
-    get_response = requests.get(
+    get_response = requests.get( # tenta buscar e valida que o usuário não existe mais
         f"{BASE_URL}/usuarios/{user_id}",
     )
     assert get_response.status_code == 400
